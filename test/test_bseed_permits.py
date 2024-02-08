@@ -1,6 +1,7 @@
 import pytest
 from freezegun import freeze_time
 from scrapy.http import Response
+
 from tracker.spiders.bseed_permits import BseedPermitsSpider
 
 pytest.mark.usefixtures("betamax_session")

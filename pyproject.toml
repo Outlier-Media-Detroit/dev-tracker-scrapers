@@ -43,14 +43,15 @@ exclude = '''
 
 [tool.ruff]
 line-length = 88
+exclude = [
+    ".git",
+    ".venv",
+    ".pytest_cache"
+]
+[tool.ruff.lint]
 select = [
     "E",
     "F",
     "W",
     "I"
-]
-exclude = [
-    ".git",
-    ".venv",
-    ".pytest_cache"
 ]

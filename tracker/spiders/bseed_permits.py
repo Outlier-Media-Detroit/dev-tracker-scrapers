@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Mapping
 
 import scrapy
+
 from tracker.items import TrackerEvent, TrackerLocation
 
 
