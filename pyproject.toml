@@ -2,7 +2,7 @@
 name = "dev-tracker-scrapers"
 version = "0.1.0"
 description = ""
-authors = [""]
+authors = ["Outlier Media <admin@outliermedia.org>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
