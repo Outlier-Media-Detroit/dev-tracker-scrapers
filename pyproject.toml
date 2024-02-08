@@ -1,0 +1,56 @@
+[tool.poetry]
+name = "dev-tracker-scrapers"
+version = "0.1.0"
+description = ""
+authors = [""]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+scrapy = "^2.11.0"
+requests = "^2.31.0"
+itemadapter = "^0.8.0"
+
+[tool.poetry.group.dev.dependencies]
+freezegun = "^1.4.0"
+betamax = "^0.8.1"
+pytest = "^8.0.0"
+black = "^24.1.1"
+ruff = "^0.2.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+exclude = '''
+(
+    \.git
+    | \.venv
+    | \.vscode
+    | \.pytest_cache
+    | __pycache__
+    | build
+    | coverage
+    | dist
+)
+'''
+
+[tool.ruff]
+line-length = 88
+select = [
+    "E",
+    "F",
+    "W",
+    "I"
+]
+exclude = [
+    ".git",
+    ".venv",
+    ".pytest_cache"
+]
