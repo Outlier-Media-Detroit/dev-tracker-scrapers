@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Mapping
 
 import scrapy
+from scrapy.http import Response
 
 from tracker.items import TrackerEvent, TrackerLocation
 
@@ -13,7 +14,7 @@ class BseedPermitsSpider(scrapy.Spider):
         "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/building_permits_2023/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"  # noqa
     ]
 
-    def parse(self, response):
+    def parse(self, response: Response):
         res = json.loads(response.body)
         for feature in res["features"]:
             rec = feature["properties"]

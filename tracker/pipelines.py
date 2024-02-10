@@ -15,7 +15,8 @@ class TrackerPipeline:
         pipeline = cls(crawler)
         # TODO: This should be a key-value storage of strings to find and the fields to
         # apply to items matching them
-        crawler.spider._projects = {}
+        if crawler.spider:
+            crawler.spider._projects = {}
         return pipeline
 
     # def process_item(self, item: TrackerEvent, spider: Spider) -> Item:
