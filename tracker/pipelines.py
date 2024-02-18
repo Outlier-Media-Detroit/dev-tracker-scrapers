@@ -1,7 +1,7 @@
-# from scrapy import Item, Spider
+from scrapy import Spider
 from scrapy.crawler import Crawler
 
-# from .items import TrackerEvent
+from .items import TrackerEvent
 
 
 # TODO: implement pipeline loading previous development lookup strings
@@ -9,6 +9,7 @@ from scrapy.crawler import Crawler
 class TrackerPipeline:
     def __init__(self, crawler: Crawler):
         self.crawler = crawler
+        self.client = None
 
     @classmethod
     def from_crawler(cls, crawler: Crawler):
@@ -19,5 +20,5 @@ class TrackerPipeline:
             crawler.spider._projects = {}
         return pipeline
 
-    # def process_item(self, item: TrackerEvent, spider: Spider) -> Item:
-    #     return ItemAdapter(item)
+    def process_item(self, item: TrackerEvent, spider: Spider) -> TrackerEvent:
+        return item
