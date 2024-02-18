@@ -1,10 +1,11 @@
 from datetime import datetime
+from typing import List
 
 import scrapy
 from scrapy.http import Response
+
+from tracker.items import TrackerEvent, TrackerLocation
 from tracker.utils import clean_spaces, parse_addresses
-from tracker.items import TrackerLocation, TrackerEvent
-from typing import List
 
 
 class CityCouncilSpider(scrapy.Spider):

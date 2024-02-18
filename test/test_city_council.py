@@ -1,8 +1,9 @@
 import pytest
 from freezegun import freeze_time
 from scrapy.http import HtmlResponse
-from tracker.spiders.city_council import CityCouncilSpider
+
 from tracker.items import TrackerLocation
+from tracker.spiders.city_council import CityCouncilSpider
 
 pytest.mark.usefixtures("betamax_session")
 

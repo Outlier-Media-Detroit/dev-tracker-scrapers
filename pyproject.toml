@@ -11,6 +11,8 @@ scrapy = "^2.11.0"
 requests = "^2.31.0"
 itemadapter = "^0.8.0"
 scrapy-playwright = "^0.0.34"
+sentry-sdk = "^1.40.4"
+supabase = "^2.3.5"
 
 [tool.poetry.group.dev.dependencies]
 freezegun = "^1.4.0"
