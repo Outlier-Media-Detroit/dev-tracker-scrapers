@@ -7,6 +7,8 @@ from typing import List, Optional
 class TrackerLocation:
     pin: Optional[str] = None
     address: Optional[str] = None
+    lon: Optional[float] = None
+    lat: Optional[float] = None
 
 
 @dataclass
