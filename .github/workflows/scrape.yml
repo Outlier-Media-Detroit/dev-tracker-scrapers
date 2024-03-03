@@ -1,4 +1,4 @@
-name: CI
+name: Scrape
 
 env:
   POETRY_VIRTUALENVS_IN_PROJECT: true
@@ -6,15 +6,16 @@ env:
   SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
   SUPABASE_TABLE: ${{ vars.SUPABASE_TABLE }}
+  SCRAPY_SETTINGS_MODULE: tracker.settings.prod
 
 permissions:
   id-token: write
   contents: read
 
 on:
-  pull_request:
-    types: [opened, synchronize]
-  push:
+  # pull_request:
+  #   types: [opened, synchronize]
+  # push:
   workflow_dispatch:
 
 jobs:
@@ -34,8 +35,4 @@ jobs:
 
       - run: poetry install --no-interaction
 
-      - run: poetry run black . --check
-
-      - run: poetry run ruff check .
-
-      - run: poetry run pytest
+      - run: poetry run scrapy crawl
