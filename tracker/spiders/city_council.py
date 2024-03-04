@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from typing import List
 
@@ -44,26 +45,41 @@ class CityCouncilSpider(scrapy.Spider):
             yield response.follow(url)
 
     def parse(self, response: Response):
-        dt_str = response.css("time")[0].attrib["datetime"].strip()
-        dt = datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
+        body_slug = self._get_meeting_body_slug(response)
+        dt = self._get_datetime(response)
         for item in response.css(".AgendaItemContainer"):
             title = " ".join(item.css("h2 *::text").extract()).strip()
             if "BUDGET" not in title:
                 continue
-            for row in item.css(".AgendaItemContentRow .RichText p"):
-                content = clean_spaces(" ".join(row.css("*::text").extract()))
-                locations = self.parse_locations(content)
-                if len(locations) > 0:
-                    yield TrackerEvent(
-                        id="city_council/TEST",  # TODO:
-                        source="city_council",
-                        date=dt.date(),
-                        url=response.url,
-                        content=content,
-                        locations=locations,
-                    )
+            for agenda_item in item.css(".AgendaItem"):
+                agenda_num = " ".join(
+                    agenda_item.css(".AgendaItemCounter *::text").extract()
+                ).strip()
+                if not agenda_num:
+                    continue
+                for row in agenda_item.css(".AgendaItemContentRow .RichText p"):
+                    content = clean_spaces(" ".join(row.css("*::text").extract()))
+                    locations = self.parse_locations(content)
+                    if len(locations) > 0:
+                        yield TrackerEvent(
+                            id=f"city_council/{dt.strftime('%Y/%m/%d')}/{body_slug}/{agenda_num}",  # noqa
+                            source="city_council",
+                            date=dt.date(),
+                            url=response.url,
+                            content=content,
+                            locations=locations,
+                        )
 
     def parse_locations(self, content_str: str) -> List[TrackerLocation]:
         return [
             TrackerLocation(address=address) for address in parse_addresses(content_str)
         ]
+
+    def _get_meeting_body_slug(self, response: Response) -> str:
+        title = response.css("title::text").extract_first().strip()
+        body_title = title.split("-")[0].strip()
+        return re.sub(r"[^\d\w ]", "", body_title).lower().replace(" ", "_")
+
+    def _get_datetime(self, response: Response) -> datetime:
+        dt_str = response.css("time")[0].attrib["datetime"].strip()
+        return datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
