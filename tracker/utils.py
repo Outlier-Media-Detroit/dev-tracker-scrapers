@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import Set
 
 import requests
 
@@ -14,7 +14,7 @@ def clean_spaces(input_str: str) -> str:
     return re.sub(r"\s+", " ", input_str).strip()
 
 
-def parse_addresses(input_str: str) -> List[str]:
+def parse_addresses(input_str: str) -> Set[str]:
     matches = re.findall(ADDRESS_PATTERN, input_str)
     addresses = []
     chunks = []
@@ -27,7 +27,7 @@ def parse_addresses(input_str: str) -> List[str]:
                 addresses.append(f"{addr_num} {street_name}")
             addresses.append(match[0])
             chunks = []
-    return addresses
+    return set([a.replace(".", "") for a in addresses])
 
 
 # TODO: Throttle this, run at end only for addresses without PINs

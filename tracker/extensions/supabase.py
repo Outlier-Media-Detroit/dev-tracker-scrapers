@@ -4,8 +4,8 @@ from scrapy import signals
 from scrapy.crawler import Crawler
 from supabase import create_client
 from supabase.client import Client
-from ..items import TrackerEvent, TrackerLocation
-from ..api import DetroitAddressAPI
+
+from ..items import TrackerEvent
 
 
 class SupabaseExporterExtension:
@@ -30,19 +30,9 @@ class SupabaseExporterExtension:
         self.table.upsert(self.scraped_items).execute()
 
     def add_item(self, item: TrackerEvent):
-        locations = [asdict(self.clean_location(loc)) for loc in item.locations]
         item_dict = asdict(item)
         item_dict["date"] = item_dict["date"].strftime("%Y-%m-%d")
-        item_dict.pop("locations")
+        locations = item_dict.pop("locations")
 
         item_dict["data"] = {"locations": locations}
         self.scraped_items.append(item_dict)
-
-    def clean_location(self, location: TrackerLocation) -> TrackerLocation:
-        """TODO: Put this in a separate extension"""
-        if location.pin:
-            cleaned_loc = DetroitAddressAPI.get_location_from_pin(location.pin)
-        elif location.address:
-            cleaned_loc = DetroitAddressAPI.get_location_from_address(location.address)
-        # Default to existing location if a response wasn't found
-        return cleaned_loc or location

@@ -71,9 +71,24 @@ class CityCouncilSpider(scrapy.Spider):
                         )
 
     def parse_locations(self, content_str: str) -> List[TrackerLocation]:
-        return [
-            TrackerLocation(address=address) for address in parse_addresses(content_str)
-        ]
+        locations = []
+        for address in parse_addresses(content_str):
+            if not any(
+                w in address.upper()
+                for w in [
+                    "LLC",
+                    "ASSOCIATION",
+                    "OFFICER",
+                    "DETROIT CITY",
+                    "FINANCIAL",
+                    "BUDGET",
+                    "EXEMPTION",
+                    "APPLICATION",
+                    "AGREEMENT",
+                ]
+            ):
+                locations.append(TrackerLocation(address=address))
+        return locations
 
     def _get_meeting_body_slug(self, response: Response) -> str:
         title = response.css("title::text").extract_first().strip()

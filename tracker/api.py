@@ -1,12 +1,14 @@
+from typing import Optional
+
 import requests
 from ratelimit import limits, sleep_and_retry
-from typing import Optional
-from .items import TrackerLocation
 from shapely.geometry import shape
+
+from .items import TrackerLocation
 
 
 class DetroitAddressAPI:
-    ADDRES_ENDPOINT = "https://opengis.detroitmi.gov/opengis/rest/services/Geocoders/CompositeGeocoder/GeocodeServer/findAddressCandidates"  # noqa
+    ADDRESS_ENDPOINT = "https://opengis.detroitmi.gov/opengis/rest/services/Geocoders/CompositeGeocoder/GeocodeServer/findAddressCandidates"  # noqa
     PIN_ENDPOINT = "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Parcels_Current/FeatureServer/0/query"  # noqa
 
     @staticmethod
@@ -27,7 +29,7 @@ class DetroitAddressAPI:
         except Exception:
             return
 
-        return DetroitAddressAPI._get_location(data)
+        return DetroitAddressAPI._get_location_from_address(data)
 
     @staticmethod
     @sleep_and_retry

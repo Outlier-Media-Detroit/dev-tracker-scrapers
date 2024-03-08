@@ -1,7 +1,8 @@
 from scrapy import Spider
 from scrapy.crawler import Crawler
 
-from .items import TrackerEvent
+from .api import DetroitAddressAPI
+from .items import TrackerEvent, TrackerLocation
 
 
 # TODO: implement pipeline loading previous development lookup strings
@@ -21,4 +22,17 @@ class TrackerPipeline:
         return pipeline
 
     def process_item(self, item: TrackerEvent, spider: Spider) -> TrackerEvent:
+        clean_locations = []
+        for location in item.locations:
+            loc = self.clean_location(location)
+            clean_locations.append(loc)
+        item.locations = clean_locations
         return item
+
+    def clean_location(self, location: TrackerLocation) -> TrackerLocation:
+        if location.pin:
+            cleaned_loc = DetroitAddressAPI.get_location_from_pin(location.pin)
+        elif location.address:
+            cleaned_loc = DetroitAddressAPI.get_location_from_address(location.address)
+        # Default to existing location if a response wasn't found
+        return cleaned_loc or location
