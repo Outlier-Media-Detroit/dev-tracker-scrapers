@@ -24,11 +24,8 @@ def parsed(betamax_session, freeze):
 
 
 def test_count(parsed):
-    assert len(parsed) == 7
+    assert len(parsed) == 3
 
 
 def test_locations(parsed):
-    assert parsed[0].locations == [
-        TrackerLocation(address="629 West Willis"),
-        TrackerLocation(address="629 West Willis."),
-    ]
+    assert parsed[0].locations == [TrackerLocation(address="629 West Willis")]

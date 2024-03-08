@@ -7,7 +7,7 @@ def test_clean_spaces():
 
 
 def test_parse_addresses_parts():
-    assert parse_addresses("13 test 1234, and 23 Main St test") == [
+    assert parse_addresses("13 test 1234, and 23 Main St test") == {
         "1234 Main St",
         "23 Main St",
-    ]
+    }
