@@ -30,6 +30,7 @@ class TrackerPipeline:
         return item
 
     def clean_location(self, location: TrackerLocation) -> TrackerLocation:
+        cleaned_loc = None
         if location.pin:
             cleaned_loc = DetroitAddressAPI.get_location_from_pin(location.pin)
         elif location.address:
