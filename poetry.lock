@@ -867,6 +867,26 @@ files = [
 ]
 
 [[package]]
+name = "pdfminer-six"
+version = "20231228"
+description = "PDF parser and analyzer"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "pdfminer.six-20231228-py3-none-any.whl", hash = "sha256:e8d3c3310e6fbc1fe414090123ab01351634b4ecb021232206c4c9a8ca3e3b8f"},
+    {file = "pdfminer.six-20231228.tar.gz", hash = "sha256:6004da3ad1a7a4d45930cb950393df89b068e73be365a6ff64a838d37bcb08c4"},
+]
+
+[package.dependencies]
+charset-normalizer = ">=2.0.0"
+cryptography = ">=36.0.0"
+
+[package.extras]
+dev = ["black", "mypy (==0.931)", "nox", "pytest"]
+docs = ["sphinx", "sphinx-argparse"]
+image = ["Pillow"]
+
+[[package]]
 name = "platformdirs"
 version = "4.2.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -1816,4 +1836,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "df60102fa996fcf6b1e0c5a9de6d25e63121fcac13fd9b75f3b55a2ffa52a6b6"
+content-hash = "b46db1d3e7855a6079df719d7178f5dd023901bc11f009bda4e5548b1818f8d9"

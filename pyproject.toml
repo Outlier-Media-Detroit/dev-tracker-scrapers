@@ -15,6 +15,7 @@ sentry-sdk = "^1.40.4"
 supabase = "^2.3.5"
 ratelimit = "^2.2.1"
 shapely = "^2.0.3"
+pdfminer-six = "^20231228"
 
 [tool.poetry.group.dev.dependencies]
 freezegun = "^1.4.0"

@@ -1,7 +1,6 @@
 from typing import Optional
 
 import requests
-from ratelimit import limits, sleep_and_retry
 from shapely.geometry import shape
 
 from .items import TrackerLocation
@@ -12,8 +11,6 @@ class DetroitAddressAPI:
     PIN_ENDPOINT = "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Parcels_Current/FeatureServer/0/query"  # noqa
 
     @staticmethod
-    @sleep_and_retry
-    @limits(calls=5, period=1)
     def get_location_from_address(address: str) -> Optional[TrackerLocation]:
         try:
             res = requests.get(
@@ -32,8 +29,6 @@ class DetroitAddressAPI:
         return DetroitAddressAPI._get_location_from_address(data)
 
     @staticmethod
-    @sleep_and_retry
-    @limits(calls=5, period=1)
     def get_location_from_pin(pin: str) -> Optional[TrackerLocation]:
         try:
             res = requests.get(

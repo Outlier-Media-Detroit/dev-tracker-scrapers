@@ -1,3 +1,4 @@
+import logging
 import os
 
 BOT_NAME = "tracker"
@@ -38,3 +39,5 @@ CLOSESPIDER_ERRORCOUNT = 5
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+logging.getLogger("pdfminer").propagate = False
