@@ -39,4 +39,6 @@ jobs:
 
       - run: poetry install --no-interaction
 
-      - run: poetry run scrapy crawl ${{ matrix.scraper }}
+      - run: |
+          export PYTHONPATH=$(pwd):$PYTHONPATH
+          poetry run scrapy crawl ${{ matrix.scraper }}
