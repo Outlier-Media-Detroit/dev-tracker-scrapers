@@ -6,6 +6,7 @@ Web scrapers for different sources used in Outlier Media's Development Tracker.
 
 ```bash
 poetry install
+poetry run playwright install
 poetry run pytest
 poetry run scrapy crawl <spider_name>
 ```

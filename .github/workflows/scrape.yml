@@ -39,6 +39,11 @@ jobs:
 
       - run: poetry install --no-interaction
 
+      - name: Install playwright if needed
+        if: ${{ matrix.scraper }} == 'city_council'
+        run: |
+          poetry run playwright install
+
       - name: Run scraper ${{ matrix.scraper }}
         run: |
           export PYTHONPATH=$(pwd):$PYTHONPATH

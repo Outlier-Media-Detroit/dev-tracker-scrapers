@@ -34,7 +34,7 @@ EXTENSIONS = {
     "scrapy.extensions.closespider.CloseSpider": None,
 }
 
-CLOSESPIDER_ERRORCOUNT = 5
+CLOSESPIDER_ERRORCOUNT = 1
 
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
