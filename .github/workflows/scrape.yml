@@ -13,14 +13,18 @@ permissions:
   contents: read
 
 on:
-  # pull_request:
-  #   types: [opened, synchronize]
-  # push:
+  # cron:
   workflow_dispatch:
 
 jobs:
-  check:
+  scrape:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        scraper:
+          - city_council
+          - bseed_permits
+          - brownfield
 
     steps:
       - uses: actions/checkout@v2
@@ -35,4 +39,4 @@ jobs:
 
       - run: poetry install --no-interaction
 
-      - run: poetry run scrapy crawl
+      - run: poetry run scrapy crawl ${{ matrix.scraper }}
