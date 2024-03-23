@@ -25,6 +25,7 @@ class BseedPermitsSpider(scrapy.Spider):
             yield TrackerEvent(
                 id=f"bseed_permits/{rec['record_id']}",
                 source="bseed_permits",
+                source_title="",
                 date=dt.date(),
                 url="",
                 content="",  # TODO:,

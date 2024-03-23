@@ -64,6 +64,9 @@ class CityCouncilSpider(scrapy.Spider):
                         yield TrackerEvent(
                             id=f"city_council/{dt.strftime('%Y/%m/%d')}/{body_slug}/{agenda_num}",  # noqa
                             source="city_council",
+                            source_title=response.css("title::text")
+                            .extract_first()
+                            .strip(),
                             date=dt.date(),
                             url=response.url,
                             content=content,

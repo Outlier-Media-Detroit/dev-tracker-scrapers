@@ -15,6 +15,7 @@ class TrackerLocation:
 class TrackerEvent:
     id: Optional[str]
     source: str
+    source_title: str
     date: date
     url: str
     content: str

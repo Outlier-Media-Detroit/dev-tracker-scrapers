@@ -106,6 +106,7 @@ class BrownfieldSpider(scrapy.Spider):
                     response.meta["document_title"], dt, agenda_item
                 ),
                 source="brownfield",
+                source_title=response.meta["document_title"],
                 date=dt.date(),
                 url=response.url,
                 content=re.sub(r"\s+", " ", agenda_item).strip(),
