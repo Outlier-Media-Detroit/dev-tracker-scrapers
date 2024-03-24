@@ -13,7 +13,8 @@ permissions:
   contents: read
 
 on:
-  # cron:
+  schedule:
+    - cron: "11 7 * * *"
   workflow_dispatch:
 
 jobs:
