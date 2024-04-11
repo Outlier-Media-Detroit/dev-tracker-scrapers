@@ -1,17 +1,17 @@
 import re
 from datetime import datetime
-from io import BytesIO, StringIO
+from io import BytesIO
 from typing import List
 
 import requests
 import scrapy
-from pdfminer.high_level import extract_text_to_fp
+from pdfminer.high_level import extract_pages, extract_text
 from pdfminer.layout import LAParams
 from scrapy.http import Response
 from scrapy.selector import Selector
 
 from tracker.items import TrackerEvent, TrackerLocation
-from tracker.utils import parse_addresses
+from tracker.utils import PIN_PATTERN, clean_spaces, parse_addresses
 
 
 # TODO: Kales, Odd Fellows,
@@ -22,11 +22,11 @@ class BrownfieldSpider(scrapy.Spider):
     USER_AGENT = (
         "Mozilla/5.0 (X11; Linux x86_64; rv:123.0) Gecko/20100101 Firefox/123.0"
     )
-    plan_pin_map = {}
+    plan_address_map = {}
 
     def parse(self, response: Response):
         # TODO:
-        # self.load_plans(response)
+        self.load_plans(response)
         for document_link in response.css("div.et_pb_tab_2 a"):
             document_title = document_link.xpath("./text()").extract_first()
             if "AGENDA" in document_title.upper():
@@ -55,13 +55,13 @@ class BrownfieldSpider(scrapy.Spider):
             res = requests.get(
                 plan_url, allow_redirects=True, headers={"User-Agent": self.USER_AGENT}
             )
-            pdf_str = self.parse_pdf(res.content)
-            print(plan_name)
-            self.plan_pin_map[plan_name] = self.parse_pins(pdf_str)
-            print(self.plan_pin_map[plan_name])
+            pdf_str = self.parse_plan_pdf(res.content)
+            self.plan_address_map[plan_name.upper().strip()] = [
+                clean_spaces(a) for a in parse_addresses(pdf_str)
+            ]
 
     def parse_pins(self, body_text: str) -> List[str]:
-        pin_results = re.findall(r"\d{7,8}[.-]?[\dA-Z]*", body_text)
+        pin_results = re.findall(PIN_PATTERN, body_text)
         pins = []
         for result in pin_results:
             # Remove accidental suffixes of streets like ...00WOODWARD
@@ -122,9 +122,8 @@ class BrownfieldSpider(scrapy.Spider):
         project_str = re.split(r"[IVXLCDM]+\.", agenda_item)[1].split(":")[0].strip()
         # TODO: How to handle "Former Fisher Body Redevelopment" showing up for "Former
         # Fisher Body Plant"
-        locations = self.plan_pin_map.get(project_str.upper().strip(), [])
+        locations = self.plan_address_map.get(project_str.upper().strip(), [])
         for address in parse_addresses(agenda_item):
-            print(address)
             locations.append(
                 TrackerLocation(
                     address=re.split(r"Brownfield", address, flags=re.IGNORECASE)[0]
@@ -140,9 +139,19 @@ class BrownfieldSpider(scrapy.Spider):
         # TODO: Remove double spaces, but not double newlines to start
         pass
 
+    def parse_plan_pdf(self, pdf_bytes: bytes) -> str:
+        pages = extract_pages(BytesIO(pdf_bytes))
+        page_results = []
+        # Only pull pages that have PINs on them to check for addresses
+        for page_num, _ in enumerate(pages):
+            page_text = extract_text(
+                BytesIO(pdf_bytes),
+                page_numbers=[page_num],
+                laparams=LAParams(line_margin=0.1),
+            )
+            if re.search(r"\d{7,8}[.-]?[\dA-Z]*", page_text):
+                page_results.append(page_text)
+        return "\n".join(page_results)
+
     def parse_pdf(self, pdf_bytes: bytes) -> str:
-        out_str = StringIO()
-        extract_text_to_fp(
-            BytesIO(pdf_bytes), out_str, laparams=LAParams(line_margin=0.1)
-        )
-        return out_str.getvalue()
+        return extract_text(BytesIO(pdf_bytes), laparams=LAParams(line_margin=0.5))
