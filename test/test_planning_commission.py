@@ -1,6 +1,6 @@
 import pytest
 from freezegun import freeze_time
-from scrapy.http import Response, Request
+from scrapy.http import Request, Response
 
 from tracker.items import TrackerLocation
 from tracker.spiders.planning_commission import PlanningCommissionSpider
