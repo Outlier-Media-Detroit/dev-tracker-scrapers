@@ -27,6 +27,7 @@ jobs:
           - city_council
           - bseed_permits
           - brownfield
+          - planning_commission
 
     steps:
       - uses: actions/checkout@v2
