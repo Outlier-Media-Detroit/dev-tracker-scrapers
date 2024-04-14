@@ -54,6 +54,8 @@ class PlanningCommissionSpider(scrapy.Spider):
         dt = self.parse_agenda_dt(response.meta["doc_title"])
 
         for section in self.parse_agenda_sections(agenda_text):
+            if section.strip() in ["Public Comment"]:
+                continue
             h = hashlib.new("sha256")
             h.update(section.encode())
             yield TrackerEvent(
