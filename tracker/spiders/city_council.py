@@ -40,16 +40,34 @@ class CityCouncilSpider(scrapy.Spider):
             "City Council Formal Session"
         ).click()
         await page.locator(".collapse.show").wait_for()
-        for link in await page.locator(".meeting-title-heading a").all():
+        for link in await page.locator(
+            ".collapse .MeetingTypeContainer .meeting-title-heading a"
+        ).all():
+            url = await link.get_attribute("href")
+            yield response.follow(url)
+
+        planning_committee = "Planning and Economic Development Standing Committee"
+        await page.locator(".PastMeetingTypesName").get_by_text(
+            planning_committee
+        ).click()
+        await page.wait_for_selector(
+            f'.collapse.show [meetingtype="{planning_committee}"]', state="visible"
+        )
+        for link in await page.locator(
+            ".collapse .MeetingTypeContainer .meeting-title-heading a"
+        ).all():
             url = await link.get_attribute("href")
             yield response.follow(url)
 
     def parse(self, response: Response):
         body_slug = self._get_meeting_body_slug(response)
         dt = self._get_datetime(response)
+        source_title = (
+            response.css("title::text").extract_first().split(" - ")[0].strip()
+        )
         for item in response.css(".AgendaItemContainer"):
             title = " ".join(item.css("h2 *::text").extract()).strip()
-            if "BUDGET" not in title:
+            if "Formal Session" in source_title and "BUDGET" not in title:
                 continue
             for agenda_item in item.css(".AgendaItem"):
                 agenda_num = " ".join(
@@ -64,9 +82,7 @@ class CityCouncilSpider(scrapy.Spider):
                         yield TrackerEvent(
                             id=f"city_council/{dt.strftime('%Y/%m/%d')}/{body_slug}/{agenda_num}",  # noqa
                             source="city_council",
-                            source_title=response.css("title::text")
-                            .extract_first()
-                            .strip(),
+                            source_title=source_title,
                             date=dt.date(),
                             url=response.url,
                             content=content,
