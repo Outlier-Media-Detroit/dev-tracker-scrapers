@@ -1,11 +1,13 @@
-import scrapy
+import re
 from datetime import datetime, timedelta
-from scrapy.http import Response
 from typing import List, Optional
 from urllib.parse import urlencode
-from tracker.utils import clean_spaces
+
+import scrapy
+from scrapy.http import Response
+
 from tracker.items import TrackerEvent, TrackerLocation
-import re
+from tracker.utils import clean_spaces
 
 
 class BseedSpecialSpider(scrapy.Spider):
