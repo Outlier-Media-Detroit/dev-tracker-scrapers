@@ -10,7 +10,7 @@ from ..items import TrackerEvent
 
 class SupabaseExporterExtension:
     def __init__(self, url: str, key: str, table: str):
-        self.scraped_items = []
+        self.scraped_items = {}
         self.client: Client = create_client(url, key)
         self.table = self.client.table(table)
 
@@ -27,7 +27,7 @@ class SupabaseExporterExtension:
         return extension
 
     def spider_closed(self):
-        self.table.upsert(self.scraped_items).execute()
+        self.table.upsert(list(self.scraped_items.values())).execute()
 
     def add_item(self, item: TrackerEvent):
         item_dict = asdict(item)
@@ -35,4 +35,5 @@ class SupabaseExporterExtension:
         locations = item_dict.pop("locations")
 
         item_dict["data"] = {"locations": locations}
-        self.scraped_items.append(item_dict)
+        # TODO: Figure out why city_council IDs not unique
+        self.scraped_items[item_dict["id"]] = item_dict
