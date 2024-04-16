@@ -28,6 +28,7 @@ jobs:
           - bseed_permits
           - brownfield
           - planning_commission
+          - bseed_special
 
     steps:
       - uses: actions/checkout@v2
