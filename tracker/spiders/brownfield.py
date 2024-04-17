@@ -5,6 +5,7 @@ from typing import List
 
 import requests
 import scrapy
+import sentry_sdk
 from pdfminer.high_level import extract_pages, extract_text
 from pdfminer.layout import LAParams
 from scrapy.http import Response
@@ -51,11 +52,10 @@ class BrownfieldSpider(scrapy.Spider):
                 plan_link_map[plan_title] = self.get_plan_url(response, plan_link)
 
         for plan_name, plan_url in plan_link_map.items():
-            print(plan_url)
             res = requests.get(
                 plan_url, allow_redirects=True, headers={"User-Agent": self.USER_AGENT}
             )
-            pdf_str = self.parse_plan_pdf(res.content)
+            pdf_str = self.parse_plan_pdf(plan_url, res.content)
             self.plan_address_map[plan_name.upper().strip()] = [
                 clean_spaces(a) for a in parse_addresses(pdf_str)
             ]
@@ -139,19 +139,26 @@ class BrownfieldSpider(scrapy.Spider):
         # TODO: Remove double spaces, but not double newlines to start
         pass
 
-    def parse_plan_pdf(self, pdf_bytes: bytes) -> str:
+    def parse_plan_pdf(self, plan_url: str, pdf_bytes: bytes) -> str:
         pages = extract_pages(BytesIO(pdf_bytes))
         page_results = []
-        # Only pull pages that have PINs on them to check for addresses
-        for page_num, _ in enumerate(pages):
-            page_text = extract_text(
-                BytesIO(pdf_bytes),
-                page_numbers=[page_num],
-                laparams=LAParams(line_margin=0.1),
-            )
-            if re.search(r"\d{7,8}[.-]?[\dA-Z]*", page_text):
-                page_results.append(page_text)
-        return "\n".join(page_results)
+        try:
+            # Only pull pages that have PINs on them to check for addresses
+            for page_num, _ in enumerate(pages):
+                page_text = extract_text(
+                    BytesIO(pdf_bytes),
+                    page_numbers=[page_num],
+                    laparams=LAParams(line_margin=0.1),
+                )
+                if re.search(r"\d{7,8}[.-]?[\dA-Z]*", page_text):
+                    page_results.append(page_text)
+            return "\n".join(page_results)
+        except Exception as e:
+            with sentry_sdk.push_scope() as scope:
+                scope.set_extra("url", plan_url)
+                sentry_sdk.capture_exception(e)
+
+            return ""
 
     def parse_pdf(self, pdf_bytes: bytes) -> str:
         return extract_text(BytesIO(pdf_bytes), laparams=LAParams(line_margin=0.5))
