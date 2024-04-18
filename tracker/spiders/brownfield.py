@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from io import BytesIO
-from typing import List
+from typing import List, Optional
 
 import requests
 import scrapy
@@ -90,20 +90,24 @@ class BrownfieldSpider(scrapy.Spider):
 
     def parse_agenda_pdf(self, response: Response):
         agenda_text = self.parse_pdf(response.body)
-        agenda_project_items = [
-            agenda_item
-            for agenda_item in re.split(
-                r"\n(?=[IVXLCDM]+\.)",
-                agenda_text.split("PROJECTS")[1].split("OTHER")[0],
-            )
-            if ":" in agenda_item
+        split_items = agenda_text.split("PROJECTS")[1].split("OTHER")[0].split("\n\n")
+        agenda_numbers = [
+            agenda_num
+            for agenda_num in split_items
+            if re.search(r"^[IVXLCDM]+\.", agenda_num.strip())
         ]
-        for agenda_item in agenda_project_items:
+        agenda_project_items = [
+            agenda_item for agenda_item in split_items if ":" in agenda_item
+        ]
+        for idx, agenda_item in enumerate(agenda_project_items):
             date_str = response.meta["document_title"].split(" – ")[1]
             dt = datetime.strptime(date_str, "%B %d, %Y")
+            item_id = None
+            if len(agenda_numbers) > idx:
+                item_id = agenda_numbers[idx]
             yield TrackerEvent(
                 id=self.parse_agenda_id(
-                    response.meta["document_title"], dt, agenda_item
+                    response.meta["document_title"], dt, agenda_item, item_id
                 ),
                 source="brownfield",
                 source_title=response.meta["document_title"],
@@ -113,16 +117,28 @@ class BrownfieldSpider(scrapy.Spider):
                 locations=self.parse_agenda_item_locations(agenda_item),
             )
 
-    def parse_agenda_id(self, title: str, dt: datetime, agenda_item: str) -> str:
-        item_id = agenda_item.split(".")[0].lower().strip()
+    def parse_agenda_id(
+        self,
+        title: str,
+        dt: datetime,
+        agenda_item: str,
+        item_id: Optional[str] = None,
+    ) -> str:
+        if not item_id:
+            item_id = agenda_item.split(".")[0].lower().strip()
         slug_title = re.sub(r"[^a-z0-9 ]", "", title.lower()).replace(" ", "_")
         return f"brownfield/{dt.strftime('%Y/%m/%d')}/{slug_title}/{item_id}"
 
     def parse_agenda_item_locations(self, agenda_item: str) -> List[TrackerLocation]:
-        project_str = re.split(r"[IVXLCDM]+\.", agenda_item)[1].split(":")[0].strip()
+        if re.search(r"^[IVXLCDM]+\.", agenda_item):
+            agenda_item = re.split(r"[IVXLCDM]+\.", agenda_item)[1]
+        project_str = agenda_item.upper().split(":")[0].split("BROWNFIELD")[0].strip()
         # TODO: How to handle "Former Fisher Body Redevelopment" showing up for "Former
         # Fisher Body Plant"
-        locations = self.plan_address_map.get(project_str.upper().strip(), [])
+        locations = [
+            TrackerLocation(address=address)
+            for address in self.plan_address_map.get(project_str, [])
+        ]
         for address in parse_addresses(agenda_item):
             locations.append(
                 TrackerLocation(
@@ -142,9 +158,10 @@ class BrownfieldSpider(scrapy.Spider):
     def parse_plan_pdf(self, plan_url: str, pdf_bytes: bytes) -> str:
         pages = extract_pages(BytesIO(pdf_bytes))
         page_results = []
-        try:
-            # Only pull pages that have PINs on them to check for addresses
-            for page_num, _ in enumerate(pages):
+
+        # Only pull pages that have PINs on them to check for addresses
+        for page_num, _ in enumerate(pages):
+            try:
                 page_text = extract_text(
                     BytesIO(pdf_bytes),
                     page_numbers=[page_num],
@@ -152,13 +169,11 @@ class BrownfieldSpider(scrapy.Spider):
                 )
                 if re.search(r"\d{7,8}[.-]?[\dA-Z]*", page_text):
                     page_results.append(page_text)
-            return "\n".join(page_results)
-        except Exception as e:
-            with sentry_sdk.push_scope() as scope:
-                scope.set_extra("url", plan_url)
-                sentry_sdk.capture_exception(e)
-
-            return ""
+            except Exception as e:
+                with sentry_sdk.push_scope() as scope:
+                    scope.set_extra("url", plan_url)
+                    sentry_sdk.capture_exception(e)
+        return "\n".join(page_results)
 
     def parse_pdf(self, pdf_bytes: bytes) -> str:
         return extract_text(BytesIO(pdf_bytes), laparams=LAParams(line_margin=0.5))
