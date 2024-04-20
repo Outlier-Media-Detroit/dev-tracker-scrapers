@@ -11,6 +11,7 @@ class TrackerLocation:
     lat: Optional[float] = None
 
 
+# TODO: Modify source to not be a slug anymore
 @dataclass
 class TrackerEvent:
     id: Optional[str]

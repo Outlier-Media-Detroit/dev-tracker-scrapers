@@ -25,7 +25,8 @@ class TrackerPipeline:
         clean_locations = []
         for location in item.locations:
             loc = self.clean_location(location)
-            clean_locations.append(loc)
+            if loc:
+                clean_locations.append(loc)
         item.locations = clean_locations
         return item
 
@@ -33,7 +34,8 @@ class TrackerPipeline:
         cleaned_loc = None
         if location.pin:
             cleaned_loc = DetroitAddressAPI.get_location_from_pin(location.pin)
-        elif location.address:
+        # Try address if exists and PIN doesn't return a response
+        if location.address and not cleaned_loc:
             cleaned_loc = DetroitAddressAPI.get_location_from_address(location.address)
-        # Default to existing location if a response wasn't found
-        return cleaned_loc or location
+        # Only include location if API matches
+        return cleaned_loc
