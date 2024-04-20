@@ -58,7 +58,7 @@ class BrownfieldSpider(scrapy.Spider):
             pdf_str = self.parse_plan_pdf(plan_url, res.content)
             self.plan_address_map[plan_name.upper().strip()] = [
                 clean_spaces(a) for a in parse_addresses(pdf_str)
-            ]
+            ] + self.parse_pins(pdf_str)
 
     def parse_pins(self, body_text: str) -> List[str]:
         pin_results = re.findall(PIN_PATTERN, body_text)
@@ -167,7 +167,7 @@ class BrownfieldSpider(scrapy.Spider):
                     page_numbers=[page_num],
                     laparams=LAParams(line_margin=0.1),
                 )
-                if re.search(r"\d{7,8}[.-]?[\dA-Z]*", page_text):
+                if re.search(PIN_PATTERN, page_text):
                     page_results.append(page_text)
             except Exception as e:
                 with sentry_sdk.push_scope() as scope:
