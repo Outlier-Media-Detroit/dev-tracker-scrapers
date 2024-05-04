@@ -18,17 +18,11 @@ class PlanningCommissionSpider(scrapy.Spider):
     allowed_domains = ["detroitmi.gov"]
     start_urls = [
         "https://detroitmi.gov/documents?name=&field_department_target_id_1=%22CPC+Agendas%22&field_description_value=",  # noqa
-        # "https://detroitmi.gov/documents?name=&field_department_target_id_1=%22CPC+Minutes%22&field_description_value=",  # noqa
     ]
 
     def parse(self, response: Response):
         for doc_link in response.css("#block-detroitmi-content ul a"):
             doc_title = doc_link.xpath("./text()").extract_first()
-            # callback = (
-            #     self.parse_minutes
-            #     if "minutes" in doc_title.lower()
-            #     else self.parse_agenda
-            # )
             yield scrapy.Request(
                 response.urljoin(doc_link.xpath("@href").extract_first()),
                 self.parse_document_page,
@@ -85,8 +79,12 @@ class PlanningCommissionSpider(scrapy.Spider):
 
             if re.search(r"^[IVXLCDM]+\.\s+Public Hearings", clean_section):
                 include_section = True
-            elif include_section and not any(
-                re.search(pattern, clean_section) for pattern in IGNORE_PATTERNS
+            elif (
+                include_section
+                and len(section) >= 32
+                and not any(
+                    re.search(pattern, clean_section) for pattern in IGNORE_PATTERNS
+                )
             ):
                 sections.append(section.strip())
 
