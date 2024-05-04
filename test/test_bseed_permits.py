@@ -23,4 +23,11 @@ def parsed(betamax_session, freeze):
 
 
 def test_count(parsed):
-    assert len(parsed) == 6
+    assert len(parsed) == 7
+
+
+def test_content(parsed):
+    assert (
+        parsed[0].content
+        == "Date Issued: March  1, 2019\nBuilding Legal Use: Building\nProposed Use: Bank\nPermit Type: New\nDescription of Work: N/A\nContractor Estimated Cost: N/A\nStories: N/A\nZoning Code: N/A\nType of Construction: 1A - CONC/STL (FP 443)"  # noqa
+    )
