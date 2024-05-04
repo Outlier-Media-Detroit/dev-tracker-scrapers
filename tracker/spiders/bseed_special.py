@@ -7,7 +7,7 @@ import scrapy
 from scrapy.http import Response
 
 from tracker.items import TrackerEvent, TrackerLocation
-from tracker.utils import clean_spaces, parse_addresses, PIN_PATTERN
+from tracker.utils import PIN_PATTERN, clean_spaces, parse_addresses
 
 
 class BseedSpecialSpider(scrapy.Spider):
