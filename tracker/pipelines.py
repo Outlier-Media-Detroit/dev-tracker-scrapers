@@ -5,8 +5,6 @@ from .api import DetroitAddressAPI
 from .items import TrackerEvent, TrackerLocation
 
 
-# TODO: implement pipeline loading previous development lookup strings
-# Base on https://github.com/City-Bureau/city-scrapers-core/blob/main/city_scrapers_core/pipelines/diff.py  # noqa
 class TrackerPipeline:
     def __init__(self, crawler: Crawler):
         self.crawler = crawler
@@ -25,7 +23,12 @@ class TrackerPipeline:
         clean_locations = []
         for location in item.locations:
             loc = self.clean_location(location)
-            if loc:
+            # Make sure PIN isn't already included
+            if loc and not (
+                loc.pin
+                and len(loc.pin) > 0
+                and any(cl.pin == loc.pin for cl in clean_locations)
+            ):
                 clean_locations.append(loc)
         item.locations = clean_locations
         return item

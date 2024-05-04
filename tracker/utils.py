@@ -5,7 +5,7 @@ import requests
 
 from tracker.items import TrackerLocation
 
-ADDRESS_PATTERN = r"((\b\d+(?=(,| and | or )))|(\b\d+(\s+[A-Z]\w*\.?)+))"
+ADDRESS_PATTERN = r"((\b\d+(?=(,| & | and | or )))|(\b\d+(\s+[A-Z]\w*\.?)+))"
 PIN_PATTERN = r"\d{7,8}[.-]?[\dA-Z]*"
 
 

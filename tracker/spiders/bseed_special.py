@@ -7,7 +7,7 @@ import scrapy
 from scrapy.http import Response
 
 from tracker.items import TrackerEvent, TrackerLocation
-from tracker.utils import clean_spaces
+from tracker.utils import clean_spaces, parse_addresses, PIN_PATTERN
 
 
 class BseedSpecialSpider(scrapy.Spider):
@@ -66,7 +66,7 @@ class BseedSpecialSpider(scrapy.Spider):
                 date=event_dt.date(),
                 url=response.url,
                 content=row_text,
-                locations=[self.parse_location(row_chunks)],
+                locations=self.parse_locations(row_chunks),
             )
 
     def parse_case_id(self, row_chunks: List[str]) -> Optional[str]:
@@ -77,8 +77,11 @@ class BseedSpecialSpider(scrapy.Spider):
                 return clean_chunks[idx + 1]
         return "x"
 
-    def parse_location(self, row_chunks: List[str]) -> TrackerLocation:
-        location_row = [r for r in row_chunks if "PIN:" in r][0]
-        street_address = location_row.split("(")[0].strip()
-        pin = re.search(r"(?<=\(PIN:).*(?=\))", location_row).group().strip()
-        return TrackerLocation(pin=pin, address=street_address)
+    def parse_locations(self, row_chunks: List[str]) -> List[TrackerLocation]:
+        locations = []
+        location_str = [r for r in row_chunks if "PIN:" in r][0]
+        for address in parse_addresses(location_str):
+            locations.append(TrackerLocation(address=address))
+        for pin in re.findall(PIN_PATTERN, location_str):
+            locations.append(TrackerLocation(pin=pin))
+        return locations
