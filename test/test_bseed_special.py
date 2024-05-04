@@ -33,5 +33,6 @@ def test_id(parsed):
 
 def test_locations(parsed):
     assert parsed[0].locations == [
-        TrackerLocation(address="7214 W. Vernor Hwy..", pin="18001417.")
+        TrackerLocation(address="7214 W Vernor Hwy"),
+        TrackerLocation(pin="18001417."),
     ]
