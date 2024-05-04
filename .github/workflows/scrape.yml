@@ -30,6 +30,7 @@ jobs:
           - planning_commission
           - bseed_special
           - community_benefits
+          - historic_district_commission
 
     steps:
       - uses: actions/checkout@v2
