@@ -35,5 +35,4 @@ class SupabaseExporterExtension:
         locations = item_dict.pop("locations")
 
         item_dict["data"] = {"locations": locations}
-        # TODO: Figure out why city_council IDs not unique
         self.scraped_items[item_dict["id"]] = item_dict

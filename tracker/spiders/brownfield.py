@@ -147,14 +147,6 @@ class BrownfieldSpider(scrapy.Spider):
             )
         return locations
 
-    def parse_minutes_pdf(
-        self, title: str, response_bytes: bytes
-    ) -> List[TrackerEvent]:
-        """TODO: Parse semi-structured, beginning of groups"""
-        # Some project names are addresses, not included in plans
-        # TODO: Remove double spaces, but not double newlines to start
-        pass
-
     def parse_plan_pdf(self, plan_url: str, pdf_bytes: bytes) -> str:
         pages = extract_pages(BytesIO(pdf_bytes))
         page_results = []

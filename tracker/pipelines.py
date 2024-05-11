@@ -10,15 +10,6 @@ class TrackerPipeline:
         self.crawler = crawler
         self.client = None
 
-    @classmethod
-    def from_crawler(cls, crawler: Crawler):
-        pipeline = cls(crawler)
-        # TODO: This should be a key-value storage of strings to find and the fields to
-        # apply to items matching them
-        if crawler.spider:
-            crawler.spider._projects = {}
-        return pipeline
-
     def process_item(self, item: TrackerEvent, spider: Spider) -> TrackerEvent:
         clean_locations = []
         for location in item.locations:
