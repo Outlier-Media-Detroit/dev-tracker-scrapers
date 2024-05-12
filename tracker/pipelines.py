@@ -1,15 +1,10 @@
 from scrapy import Spider
-from scrapy.crawler import Crawler
 
 from .api import DetroitAddressAPI
 from .items import TrackerEvent, TrackerLocation
 
 
 class TrackerPipeline:
-    def __init__(self, crawler: Crawler):
-        self.crawler = crawler
-        self.client = None
-
     def process_item(self, item: TrackerEvent, spider: Spider) -> TrackerEvent:
         clean_locations = []
         for location in item.locations:
