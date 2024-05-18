@@ -68,7 +68,7 @@ class PlanningCommissionSpider(scrapy.Spider):
         IGNORE_PATTERNS = [
             r"^[IVXLCDM]+\.",
             r"^[A-Z]\.$",
-            r"^\d+ mins$",
+            r"^\d+ mins?$",
         ]
         for section in re.split("\n{2,}", content):
             clean_section = section.strip()
@@ -86,7 +86,7 @@ class PlanningCommissionSpider(scrapy.Spider):
                     re.search(pattern, clean_section) for pattern in IGNORE_PATTERNS
                 )
             ):
-                sections.append(section.strip())
+                sections.append(re.sub(r"\d+\s+mins?\b", "", section.strip()))
 
         return sections
 
