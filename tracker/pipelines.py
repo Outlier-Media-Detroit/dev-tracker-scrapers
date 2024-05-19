@@ -26,5 +26,8 @@ class TrackerPipeline:
         # Try address if exists and PIN doesn't return a response
         if location.address and not cleaned_loc:
             cleaned_loc = DetroitAddressAPI.get_location_from_address(location.address)
+        # Ignore odd matchesfor invalid locations
+        if cleaned_loc and (".0000" in cleaned_loc.address or cleaned_loc.lon > 0):
+            return
         # Only include location if API matches
         return cleaned_loc
