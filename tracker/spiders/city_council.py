@@ -15,7 +15,7 @@ class CityCouncilSpider(scrapy.Spider):
 
     def start_requests(self):
         current_year = datetime.now().year
-        for year in range(current_year - 1, current_year + 1):
+        for year in range(current_year, current_year + 2):
             yield scrapy.Request(
                 "https://pub-detroitmi.escribemeetings.com",
                 self._parse_events,
