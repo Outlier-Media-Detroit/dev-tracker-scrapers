@@ -32,6 +32,7 @@ jobs:
           - community_benefits
           - historic_district_commission
           - medc_incentives
+          - state_tax_exemptions
 
     steps:
       - uses: actions/checkout@v2
