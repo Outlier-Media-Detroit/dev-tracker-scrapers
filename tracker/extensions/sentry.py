@@ -3,12 +3,17 @@ from io import StringIO
 import sentry_sdk
 from scrapy import Spider, signals
 from sentry_sdk import Client as SentryClient
+from sentry_sdk.integrations.logging import LoggingIntegration
 from twisted.python.failure import Failure
 
 
 class SentryErrors:
     def __init__(self, dsn):
-        self.client: SentryClient = sentry_sdk.init(dsn=dsn)
+        self.client: SentryClient = sentry_sdk.init(
+            dsn=dsn,
+            integrations=[LoggingIntegration(level=None, event_level="ERROR")],
+            traces_sample_rate=1.0,
+        )
 
     @classmethod
     def from_crawler(cls, crawler):

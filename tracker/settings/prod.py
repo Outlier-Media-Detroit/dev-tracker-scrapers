@@ -1,5 +1,8 @@
 import os
 
+import sentry_sdk
+from sentry_sdk.integrations.logging import LoggingIntegration
+
 from .base import *  # noqa
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
@@ -13,5 +16,12 @@ EXTENSIONS = {
 }
 
 SENTRY_DSN = os.getenv("SENTRY_DSN")
+
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[LoggingIntegration(level=None, event_level="ERROR")],
+        traces_sample_rate=1.0,
+    )
 
 PLAYWRIGHT_LAUNCH_OPTIONS = {"headless": True}
