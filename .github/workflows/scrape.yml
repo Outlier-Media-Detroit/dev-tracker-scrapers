@@ -33,6 +33,7 @@ jobs:
           - historic_district_commission
           - medc_incentives
           - state_tax_exemptions
+          - state_tax_nez
 
     steps:
       - uses: actions/checkout@v2
