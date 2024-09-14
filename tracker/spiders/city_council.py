@@ -78,7 +78,7 @@ class CityCouncilSpider(scrapy.Spider):
                 for row in agenda_item.css(".AgendaItemContentRow .RichText p"):
                     content = clean_spaces(" ".join(row.css("*::text").extract()))
                     locations = self.parse_locations(content)
-                    if len(locations) > 0:
+                    if len(locations) > 0 or "PILOT" in content:
                         yield TrackerEvent(
                             id=f"city_council/{dt.strftime('%Y/%m/%d')}/{body_slug}/{agenda_num}",  # noqa
                             source="city_council",
