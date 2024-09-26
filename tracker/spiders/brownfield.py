@@ -26,28 +26,30 @@ class BrownfieldSpider(scrapy.Spider):
     plan_address_map = {}
 
     def parse(self, response: Response):
-        # TODO:
-        self.load_plans(response)
-        for document_link in response.css("div.et_pb_tab_2 a"):
-            document_title = document_link.xpath("./text()").extract_first()
-            if "AGENDA" in document_title.upper():
-                yield scrapy.Request(
-                    response.urljoin(document_link.xpath("@href").extract_first()),
-                    self.parse_agenda_pdf,
-                    meta={
-                        "document_title": document_title,
-                    },
-                )
+        for section in response.css("[role=tabpanel]")[1:]:
+            for document_link in section.css("a"):
+                document_title = " ".join(document_link.css("*::text").extract())
+                if "AGENDA" in document_title.upper():
+                    yield scrapy.Request(
+                        response.urljoin(document_link.xpath("@href").extract_first()),
+                        self.parse_agenda_pdf,
+                        meta={
+                            "document_title": document_title,
+                        },
+                    )
 
     def load_plans(self, response: Response):
         plan_link_map = {}
-        for group in response.css(".accordion-block .accordion-row"):
-            label_text = " ".join(group.css(".accordion-label *::text").extract())
-            if "PLANS UNDER CONSIDERATION" not in label_text.upper():
-                continue
-            for plan_link in group.css("a"):
+        in_plans = False
+        for line in response.css(".wixui-tabs__container p"):
+            label_text = " ".join(line.css("*::text").extract())
+            if not in_plans:
+                if "PLANS UNDER CONSIDERATION" in label_text.upper():
+                    in_plans = True
+                    continue
+            for plan_link in line.css("a"):
                 plan_title = self.get_plan_name(
-                    plan_link.xpath("./text()").extract_first()
+                    " ".join(plan_link.css("*::text").extract())
                 )
                 plan_link_map[plan_title] = self.get_plan_url(response, plan_link)
 
