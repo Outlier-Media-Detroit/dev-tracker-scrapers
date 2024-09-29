@@ -54,7 +54,7 @@ class PlanningCommissionSpider(scrapy.Spider):
             h.update(section.encode())
             yield TrackerEvent(
                 id=f"planning_commission/{dt.strftime('%Y/%m/%d')}/agenda/{h.hexdigest()}",  # noqa
-                source="planning_commission",
+                source="Detroit Planning Commission",
                 source_title="Agenda",
                 date=dt.date(),
                 url=response.url,

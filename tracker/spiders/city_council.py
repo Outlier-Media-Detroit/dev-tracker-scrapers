@@ -81,7 +81,7 @@ class CityCouncilSpider(scrapy.Spider):
                     if len(locations) > 0 or "PILOT" in content:
                         yield TrackerEvent(
                             id=f"city_council/{dt.strftime('%Y/%m/%d')}/{body_slug}/{agenda_num}",  # noqa
-                            source="city_council",
+                            source="Detroit City Council",
                             source_title=source_title,
                             date=dt.date(),
                             url=response.url,

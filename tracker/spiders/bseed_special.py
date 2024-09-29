@@ -61,7 +61,7 @@ class BseedSpecialSpider(scrapy.Spider):
 
             yield TrackerEvent(
                 id=f"bseed_special/{event_dt.strftime('%Y/%m/%d')}/{case_id}",
-                source="bseed_special",
+                source="Detroit BSEED Special Events",
                 source_title=event_title,
                 date=event_dt.date(),
                 url=response.url,

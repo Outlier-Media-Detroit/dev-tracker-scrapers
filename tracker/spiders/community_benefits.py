@@ -50,7 +50,7 @@ class CommunityBenefitsSpider(scrapy.Spider):
 
         yield TrackerEvent(
             id=f"community_benefits/{event_dt.strftime('%Y/%m/%d')}/{url_subpath}",
-            source="community_benefits",
+            source="Detroit Community Benefits Meetings",
             source_title=event_title,
             date=event_dt.date(),
             url=response.url,

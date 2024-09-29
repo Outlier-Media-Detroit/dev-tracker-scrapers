@@ -175,7 +175,7 @@ class StateTaxNezSpider(scrapy.Spider):
             items.append(
                 TrackerEvent(
                     id=f"state_tax_nez/{response_date.strftime('%Y/%m/%d')}/{id_val}",
-                    source="state_tax_nez",
+                    source="Michigan State Tax Commission: NEZ",
                     source_title=f"NEZ {action_text}: {id_val}",
                     date=response_date,
                     url=response_url,

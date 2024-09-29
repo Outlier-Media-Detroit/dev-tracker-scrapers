@@ -24,7 +24,7 @@ class BseedPermitsSpider(scrapy.Spider):
             dt = datetime.fromtimestamp(rec["issued_date"] / 1000)
             yield TrackerEvent(
                 id=f"bseed_permits/{rec['record_id']}",
-                source="bseed_permits",
+                source="Detroit BSEED Permits",
                 source_title="",
                 date=dt.date(),
                 url="",

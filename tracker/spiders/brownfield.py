@@ -111,7 +111,7 @@ class BrownfieldSpider(scrapy.Spider):
                 id=self.parse_agenda_id(
                     response.meta["document_title"], dt, agenda_item, item_id
                 ),
-                source="brownfield",
+                source="Detroit Brownfield Redevelopment Authority",
                 source_title=response.meta["document_title"],
                 date=dt.date(),
                 url=response.url,

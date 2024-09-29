@@ -86,7 +86,7 @@ class StateTaxExemptionsSpider(scrapy.Spider):
 
             yield TrackerEvent(
                 id=f"state_tax_exemptions/{response.meta['action'].lower()}/{response.meta['date'].strftime('%Y/%m/%d')}/{h.hexdigest()}",  # noqa
-                source="state_tax_exemptions",
+                source="Michigan State Tax Commission",
                 source_title=self.parse_owner(page_text),
                 date=response.meta["date"],
                 url=response.url,

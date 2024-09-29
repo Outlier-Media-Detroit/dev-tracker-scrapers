@@ -55,7 +55,7 @@ class HistoricDistrictCommissionSpider(scrapy.Spider):
 
         yield TrackerEvent(
             id=f"historic_district_commission/{dt.strftime('%Y/%m/%d')}/{response.url.split('/')[-1]}",  # noqa
-            source="historic_district_commission",
+            source="Detroit Historic District Commission",
             source_title="Historic District Commission",
             date=dt.date(),
             url=response.url,

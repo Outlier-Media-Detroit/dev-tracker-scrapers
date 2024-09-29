@@ -22,7 +22,7 @@ class MedcIncentivesSpider(scrapy.Spider):
             dt = datetime.fromtimestamp(rec["Project_Close_Date"] / 1000)
             yield TrackerEvent(
                 id=f"medc_incentives/{rec['Project_RowId']}",
-                source="medc_incentives",
+                source="Michigan Economic Development Corporation Incentives",
                 source_title=rec["Project_Name"],
                 date=dt.date(),
                 url="https://maps.michiganbusiness.org/",
