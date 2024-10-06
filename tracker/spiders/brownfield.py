@@ -92,7 +92,9 @@ class BrownfieldSpider(scrapy.Spider):
 
     def parse_agenda_pdf(self, response: Response):
         agenda_text = self.parse_pdf(response.body)
-        split_items = agenda_text.split("PROJECTS")[1].split("OTHER")[0].split("\n\n")
+        split_agenda = agenda_text.split("PROJECTS")
+        agenda_content = split_agenda[0] if len(split_agenda) == 1 else split_agenda[1]
+        split_items = agenda_content.split("OTHER")[0].split("\n\n")
         agenda_numbers = [
             agenda_num
             for agenda_num in split_items
@@ -102,7 +104,10 @@ class BrownfieldSpider(scrapy.Spider):
             agenda_item for agenda_item in split_items if ":" in agenda_item
         ]
         for idx, agenda_item in enumerate(agenda_project_items):
-            date_str = response.meta["document_title"].split(" – ")[1]
+            date_split = response.meta["document_title"].split(" – ")
+            if len(date_split) < 2:
+                continue
+            date_str = date_split[1]
             dt = datetime.strptime(date_str, "%B %d, %Y")
             item_id = None
             if len(agenda_numbers) > idx:
