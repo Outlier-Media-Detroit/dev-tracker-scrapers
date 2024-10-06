@@ -1,6 +1,6 @@
 import pytest
 from freezegun import freeze_time
-from scrapy.http import HtmlResponse
+from scrapy.http import HtmlResponse, Request
 
 from tracker.items import TrackerLocation
 from tracker.spiders.city_council import CityCouncilSpider
@@ -18,7 +18,11 @@ def freeze():
 def parsed(betamax_session, freeze):
     url = "https://pub-detroitmi.escribemeetings.com/Meeting.aspx?Id=78f778d5-f60e-4f58-b4b5-c52373ee5a39&Agenda=Agenda&lang=English"  # noqa
     betamax_res = betamax_session.get(url)
-    res = HtmlResponse(url, body=betamax_res.content)
+    res = HtmlResponse(
+        url,
+        body=betamax_res.content,
+        request=Request(url, meta={"source": "Detroit City Council"}),
+    )
     spider = CityCouncilSpider()
     return [item for item in spider.parse(res)]
 
