@@ -72,7 +72,9 @@ class CityCouncilSpider(scrapy.Spider):
         )
         for item in response.css(".AgendaItemContainer"):
             title = " ".join(item.css("h2 *::text").extract()).strip()
-            if "Formal Session" in source_title and "BUDGET" not in title:
+            if "Formal Session" in source_title and not any(
+                w in title for w in ["BUDGET", "PLANNING"]
+            ):
                 continue
             for agenda_item in item.css(".AgendaItem"):
                 agenda_num = " ".join(

@@ -28,7 +28,7 @@ def parsed(betamax_session, freeze):
 
 
 def test_count(parsed):
-    assert len(parsed) == 3
+    assert len(parsed) == 14
 
 
 def test_locations(parsed):
