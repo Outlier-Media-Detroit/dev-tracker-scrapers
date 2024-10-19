@@ -41,10 +41,12 @@ class CityCouncilSpider(scrapy.Spider):
         ).click()
         await page.locator(".collapse.show").wait_for()
         for link in await page.locator(
-            ".collapse .MeetingTypeContainer .meeting-title-heading a"
+            ".collapse .MeetingTypeContainer .itemResources a.link"
         ).all():
             url = await link.get_attribute("href")
-            yield response.follow(url, meta={"source": "Detroit City Council"})
+            # Applies to both agendas and minutes
+            if "Agenda=" in url:
+                yield response.follow(url, meta={"source": "Detroit City Council"})
 
         planning_committee = "Planning and Economic Development Standing Committee"
         await page.locator(".PastMeetingTypesName").get_by_text(
@@ -54,15 +56,16 @@ class CityCouncilSpider(scrapy.Spider):
             f'.collapse.show [meetingtype="{planning_committee}"]', state="visible"
         )
         for link in await page.locator(
-            ".collapse .MeetingTypeContainer .meeting-title-heading a"
+            ".collapse .MeetingTypeContainer .itemResources a.link"
         ).all():
             url = await link.get_attribute("href")
-            yield response.follow(
-                url,
-                meta={
-                    "source": "Detroit City Council Planning and Economic Development Committee"  # noqa
-                },
-            )
+            if "Agenda=" in url:
+                yield response.follow(
+                    url,
+                    meta={
+                        "source": "Detroit City Council Planning and Economic Development Committee"  # noqa
+                    },
+                )
 
     def parse(self, response: Response):
         body_slug = self._get_meeting_body_slug(response)
