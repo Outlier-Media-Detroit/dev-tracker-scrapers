@@ -85,7 +85,7 @@ class CityCouncilSpider(scrapy.Spider):
                 ).strip()
                 if not agenda_num:
                     continue
-                for row in agenda_item.css(".AgendaItemContentRow .RichText p"):
+                for row in agenda_item.css(".AgendaItemDescription p"):
                     content = clean_spaces(" ".join(row.css("*::text").extract()))
                     locations = self.parse_locations(content)
                     if len(locations) > 0 or "PILOT" in content:
