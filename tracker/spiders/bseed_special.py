@@ -51,11 +51,19 @@ class BseedSpecialSpider(scrapy.Spider):
             return
         event_dt = datetime.strptime(event_time.split("T")[0].strip(), "%Y-%m-%d")
 
-        for row in response.css("article.description p"):
+        parsed_rows = response.css("article.description p")
+        for row_idx, row in enumerate(parsed_rows):
             row_text = clean_spaces(" ".join(row.css("*::text").extract()))
             # Only handling clean PIN items
             if "PIN:" not in row_text:
                 continue
+            # Handle when the proposed use is split into the next paragraph
+            if row_idx < (len(parsed_rows) - 1):
+                next_row_text = clean_spaces(
+                    " ".join(parsed_rows[row_idx + 1].css("*::text").extract())
+                )
+                if "Proposed Use:" in next_row_text:
+                    row_text = " ".join([row_text, next_row_text])
             row_chunks = row.css("*::text").extract()
             case_id = self.parse_case_id(row_chunks)
 
