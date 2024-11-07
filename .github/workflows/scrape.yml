@@ -34,6 +34,7 @@ jobs:
           - medc_incentives
           - state_tax_exemptions
           - state_tax_nez
+          - medc_programs
 
     steps:
       - uses: actions/checkout@v2
