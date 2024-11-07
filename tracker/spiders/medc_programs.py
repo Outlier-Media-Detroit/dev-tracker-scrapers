@@ -1,7 +1,9 @@
-import scrapy
-from tracker.items import TrackerEvent
-from datetime import datetime
 import re
+from datetime import datetime
+
+import scrapy
+
+from tracker.items import TrackerEvent
 
 
 class MedcProgramsSpider(scrapy.Spider):
