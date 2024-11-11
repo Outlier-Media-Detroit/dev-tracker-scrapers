@@ -11,7 +11,7 @@ from tracker.items import TrackerEvent, TrackerLocation
 class BseedPermitsSpider(scrapy.Spider):
     name = "bseed_permits"
     start_urls = [
-        "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/building_permits_2023/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"  # noqa
+        "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/building_permits_2023/FeatureServer/0/query?outFields=*&where=1%3D1&orderByFields=submitted_date DESC,issued_date DESC&f=geojson"  # noqa
     ]
 
     def parse(self, response: Response):
