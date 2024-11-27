@@ -35,6 +35,7 @@ jobs:
           - state_tax_exemptions
           - state_tax_nez
           - medc_programs
+          - board_zoning_appeals
 
     steps:
       - uses: actions/checkout@v2
