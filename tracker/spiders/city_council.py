@@ -87,6 +87,8 @@ class CityCouncilSpider(scrapy.Spider):
                     continue
                 for row in agenda_item.css(".AgendaItemDescription p"):
                     content = clean_spaces(" ".join(row.css("*::text").extract()))
+                    if content.startswith("APPROVED"):
+                        continue
                     locations = self.parse_locations(content)
                     if len(locations) > 0 or "PILOT" in content:
                         yield TrackerEvent(
