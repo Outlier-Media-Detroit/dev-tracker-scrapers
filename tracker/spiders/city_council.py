@@ -36,9 +36,11 @@ class CityCouncilSpider(scrapy.Spider):
         await page.locator(".YearFilterOption").select_option(year_option_text.strip())
         await page.wait_for_url(f"**/?Year={response.meta['year']}**")
 
-        await page.locator(".PastMeetingTypesName").get_by_text(
-            "City Council Formal Session"
-        ).click()
+        await (
+            page.locator(".PastMeetingTypesName")
+            .get_by_text("City Council Formal Session")
+            .click()
+        )
         await page.locator(".collapse.show").wait_for()
         for link in await page.locator(
             ".collapse .MeetingTypeContainer .itemResources a.link"
@@ -49,9 +51,11 @@ class CityCouncilSpider(scrapy.Spider):
                 yield response.follow(url, meta={"source": "Detroit City Council"})
 
         planning_committee = "Planning and Economic Development Standing Committee"
-        await page.locator(".PastMeetingTypesName").get_by_text(
-            planning_committee
-        ).click()
+        await (
+            page.locator(".PastMeetingTypesName")
+            .get_by_text(planning_committee)
+            .click()
+        )
         await page.wait_for_selector(
             f'.collapse.show [meetingtype="{planning_committee}"]', state="visible"
         )

@@ -2,14 +2,14 @@ from io import StringIO
 
 import sentry_sdk
 from scrapy import Spider, signals
-from sentry_sdk import Client as SentryClient
+from sentry_sdk import capture_message
 from sentry_sdk.integrations.logging import LoggingIntegration
 from twisted.python.failure import Failure
 
 
 class SentryErrors:
     def __init__(self, dsn):
-        self.client: SentryClient = sentry_sdk.init(
+        sentry_sdk.init(
             dsn=dsn,
             integrations=[LoggingIntegration(level=None, event_level="ERROR")],
             traces_sample_rate=1.0,
@@ -24,6 +24,4 @@ class SentryErrors:
     def spider_error(self, failure: Failure, response, spider: Spider):
         traceback = StringIO()
         failure.printTraceback(file=traceback)
-        self.client.capture_message(
-            message="[{}] {}".format(spider.name, repr(failure.value))
-        )
+        capture_message(message="[{}] {}".format(spider.name, repr(failure.value)))
