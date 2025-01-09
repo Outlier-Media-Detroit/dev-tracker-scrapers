@@ -6,6 +6,9 @@ authors = [{name = "Outlier Media", email = "admin@outliermedia.org"}]
 readme = "README.md"
 requires-python = ">=3.11"
 
+[tool.poetry]
+packages = [{include = "tracker"}]
+
 [tool.poetry.dependencies]
 python = "^3.11"
 scrapy = "^2.11.0"
