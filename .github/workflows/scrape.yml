@@ -36,6 +36,7 @@ jobs:
           - state_tax_nez
           - medc_programs
           - board_zoning_appeals
+          - det_press_releases
 
     steps:
       - uses: actions/checkout@v2
