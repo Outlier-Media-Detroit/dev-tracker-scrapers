@@ -7,7 +7,7 @@ from .items import TrackerLocation
 
 
 class DetroitAddressAPI:
-    ADDRESS_ENDPOINT = "https://opengis.detroitmi.gov/opengis/rest/services/Geocoders/CompositeGeocoder/GeocodeServer/findAddressCandidates"  # noqa
+    ADDRESS_ENDPOINT = "https://opengis.detroitmi.gov/opengis/rest/services/BaseUnits/BaseUnitGeocoder/GeocodeServer/findAddressCandidates"  # noqa
     PIN_ENDPOINT = "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Parcels_Current/FeatureServer/0/query"  # noqa
 
     @staticmethod
